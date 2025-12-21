@@ -153,7 +153,6 @@ The plugin includes three example themes to help you get started:
 
 - **vscode** (default) - Full-featured VS Code-inspired theme with all components
 - **minimal** - Simple theme with just mode, file info, and essentials
-- **full** - Comprehensive theme showing all available components
 
 Try them with:
 ```lua
