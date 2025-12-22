@@ -1,3 +1,4 @@
+
 -- VS Code themed statusline implementation
 -- Combines modular components into a clean, VS Code-inspired statusline layout
 
@@ -19,6 +20,7 @@ function M.run()
   local left = C.join("", {
     C.pad(components.mode()),
     C.pad(components.file_info()),
+    C.pad(components.git_branch()),
     C.pad(components.lsp_diagnostics()),
   })
 
@@ -27,6 +29,7 @@ function M.run()
 
   -- Right section: metadata about the file and system
   local right = C.join(" ", {
+    C.pad(components.git_changes(), "", " |"),
     components.cursor_position(true),  -- Show cursor position with totals
     components.file_encoding(),
     components.filetype(),
