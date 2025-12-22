@@ -29,7 +29,7 @@ function M.run()
   -- Right section: metadata about the file and system
   local right = C.join(" ", {
     C.pad(components.git_changes(), "", " |"),
-    components.cursor_position(),
+    components.cursor_position(true),  -- Show cursor position with totals
     components.file_encoding(),
     components.filetype(),
     components.lsp_status(),

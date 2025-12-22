@@ -19,7 +19,7 @@ function M.run()
   -- Right: essentials
   local right = C.join(" ", {
     components.lsp_status(),
-    components.cursor_position(),
+    components.cursor_position(true),  -- Show cursor position with totals
   })
 
   return left .. "%=" .. right

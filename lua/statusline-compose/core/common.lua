@@ -89,29 +89,34 @@ function M.get_filetype()
   return vim.bo.ft
 end
 
---- Get current git branch
+--- Get current git branch from gitsigns
 --- Requires gitsigns.nvim to be installed
 ---@return string The branch name or empty string
 function M.get_branch()
-  if not vim.b.gitsigns_git_status then return "" end
-  if vim.b.gitsigns_status_dict.head ~= "" then
-    return vim.b.gitsigns_status_dict.head
-  else
-    return "?"
+  local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
+  if not gitsigns_ok then return "" end
+
+  local status = gitsigns.get_status()
+  if not status or not status.head or status.head == "" then
+    return ""
   end
+  return status.head
 end
 
---- Get git changes (added, changed, removed counts)
+--- Get git changes (added, changed, removed counts) from gitsigns
 --- Requires gitsigns.nvim to be installed
 ---@return table|nil Table with 'added', 'changed', 'removed' keys or nil
 function M.get_changes()
-  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then return nil end
+  local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
+  if not gitsigns_ok then return nil end
 
-  local git_status = vim.b.gitsigns_status_dict
+  local status = gitsigns.get_status()
+  if not status then return nil end
+
   return {
-    added = git_status.added or 0,
-    changed = git_status.changed or 0,
-    removed = git_status.removed or 0,
+    added = status.added or 0,
+    changed = status.changed or 0,
+    removed = status.removed or 0,
   }
 end
 

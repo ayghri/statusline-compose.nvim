@@ -152,20 +152,33 @@ function M.lsp_status()
   return C.join(" ", { "%#StLineLspStatus#", Statusline.opts.icons.lsp, "LSP" })
 end
 
---- Cursor position component: Display line number, total lines, column, and line length
+--- Cursor position component: Display line number, column, and optionally totals
 --- Only shown when terminal width exceeds position_min_width
+---@param show_total boolean Show total lines/columns (default: true)
+---   - true:  "Ln 10/100, Cl 5/80" (shows current and total)
+---   - false: "Ln 10, Cl 5" (shows only current position)
 ---@return string The formatted cursor position string or empty string
-function M.cursor_position()
+function M.cursor_position(show_total)
   if vim.o.columns < Statusline.opts.position_min_width then
     return ""
   end
+
+  -- Default to true if not specified
+  show_total = (show_total == nil) and true or show_total
   local max_col = #vim.api.nvim_get_current_line()
-  return "%#StLinePosText#Ln "
-    .. "%l"
-    .. "%#StLinePosSep#/%#StLinePosText#"
-    .. "%L, Cl %c"
-    .. "%#StLinePosSep#/%#StLinePosText#"
-    .. max_col
+
+  if show_total then
+    -- Show current and total: "Ln 10/100, Cl 5/80"
+    return "%#StLinePosText#Ln "
+      .. "%l"
+      .. "%#StLinePosSep#/%#StLinePosText#"
+      .. "%L, Cl %c"
+      .. "%#StLinePosSep#/%#StLinePosText#"
+      .. max_col
+  else
+    -- Show only current position: "Ln 10, Cl 5"
+    return "%#StLinePosText#Ln %l, Cl %c"
+  end
 end
 
 --- File encoding component: Display current file encoding (e.g., "UTF-8")
