@@ -96,7 +96,7 @@ function M.get_branch()
   local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
   if not gitsigns_ok then return "" end
 
-  local status = gitsigns.get_status()
+  local status = vim.b.gitsigns_status_dict
   if not status or not status.head or status.head == "" then
     return ""
   end
@@ -110,7 +110,7 @@ function M.get_changes()
   local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
   if not gitsigns_ok then return nil end
 
-  local status = gitsigns.get_status()
+  local status = vim.b.gitsigns_status_dict
   if not status then return nil end
 
   return {
