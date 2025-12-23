@@ -70,7 +70,7 @@ end
 --- Uses nvim-web-devicons if available
 ---@return table Table with 'name' and 'icon' keys
 function M.get_file_info()
-  local icon = Statusline.opts.icons.default_file
+  local icon = Statusline.icons.default_file
   local filename = (fn.expand("%") == "" and "") or fn.expand("%:t")
 
   if filename ~= "" then

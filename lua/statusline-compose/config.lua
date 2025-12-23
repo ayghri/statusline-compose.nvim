@@ -1,6 +1,4 @@
--- Statusline configuration defaults
-
-local defaults = {
+local default_config = {
   -- Theme to use ('vscode' is the default theme)
   theme = "vscode",
 
@@ -18,15 +16,15 @@ local defaults = {
 
   -- Icons for various statusline elements
   icons = {
-    modified = "",
+    modified = "",
     mode = "",
     default_file = "󰈚",
     git_branch = "",
     cwd = "󰉖",
     git_changes = {
-      added = "",
-      changed = "",
-      removed = "",
+      added = "",
+      changed = "",
+      removed = "",
     },
     lsp = "󰄭",
     diagnostics = {
@@ -48,14 +46,4 @@ local defaults = {
     },
   },
 }
-
--- Initialize global Statusline table if not already present
-if not Statusline then
-  Statusline = {
-    opts = {},
-  }
-end
-
-return {
-  defaults = defaults,
-}
+return default_config

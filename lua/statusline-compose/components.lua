@@ -9,7 +9,7 @@ local M = {}
 ---@return string The formatted mode string
 function M.mode()
   local m = C.get_mode()
-  return C.join(" ", { m.highlight .. Statusline.opts.icons.mode, m.mode })
+  return C.join(" ", { m.highlight .. Statusline.icons.mode, m.mode })
 end
 
 --- File info component: Display filename with filetype icon
@@ -20,7 +20,7 @@ function M.file_info()
     "%#StLineFileInfo# " .. info.icon,
     C.sub_empty(info.name)
       .. "%#StLinePosSep#"
-      .. ((vim.bo.modified and " " .. Statusline.opts.icons.modified) or ""),
+      .. ((vim.bo.modified and " " .. Statusline.icons.modified) or ""),
   })
 end
 
@@ -38,7 +38,7 @@ function M.git_branch()
   if branch ~= "" then
     return C.join(
       " ",
-      { "%#StLineGitBranch#", Statusline.opts.git_branch_icon, branch }
+      { "%#StLineGitBranch#", Statusline.git_branch_icon, branch }
     )
   end
   return ""
@@ -48,7 +48,7 @@ end
 --- Requires gitsigns.nvim. Only shown when terminal width exceeds git_changes_min_width
 ---@return string The formatted git changes string or empty string
 function M.git_changes()
-  if vim.o.columns < Statusline.opts.git_changes_min_width then
+  if vim.o.columns < Statusline.git_changes_min_width then
     return ""
   end
   local changes = C.get_changes()
@@ -60,7 +60,7 @@ function M.git_changes()
     changed = "%#StLineLSPWarning#",
     removed = "%#StLineLSPError#",
   }
-  local icons = Statusline.opts.icons.git_changes
+  local icons = Statusline.icons.git_changes
   local result = {}
   for k, v in pairs(changes) do
     if v > 0 then
@@ -79,7 +79,7 @@ function M.lsp_diagnostics()
     return ""
   end
   local diags = C.get_diagnostics()
-  local icons = Statusline.opts.icons.diagnostics
+  local icons = Statusline.icons.diagnostics
   local diagnostics = C.join(" ", {
     "%#StLineLspError#" .. icons.error,
     C.sub_empty(diags.error),
@@ -112,14 +112,14 @@ end
 --- Only shown when terminal width exceeds LSP_progress_min_width
 ---@return string The formatted LSP progress string or empty string
 function M.lsp_progress()
-  if vim.o.columns < Statusline.opts.LSP_progress_min_width then
+  if vim.o.columns < Statusline.LSP_progress_min_width then
     return ""
   end
   local progress = C.get_lsp_message()
   if progress == "" then
     return ""
   end
-  local spinners = Statusline.opts.icons.spinners
+  local spinners = Statusline.icons.spinners
   local content = string.format(
     " %%<%s %s %s (%s%%%%) ",
     spinners[C.get_cyclic_counter(#spinners) + 1],
@@ -147,9 +147,9 @@ function M.lsp_status()
     client = "LSP"
   end
   if vim.o.columns > 100 then
-    return C.join(" ", { "%#StLineLspStatus#", Statusline.opts.icons.lsp, client })
+    return C.join(" ", { "%#StLineLspStatus#", Statusline.icons.lsp, client })
   end
-  return C.join(" ", { "%#StLineLspStatus#", Statusline.opts.icons.lsp, "LSP" })
+  return C.join(" ", { "%#StLineLspStatus#", Statusline.icons.lsp, "LSP" })
 end
 
 --- Cursor position component: Display line number, column, and optionally totals
@@ -159,7 +159,7 @@ end
 ---   - false: "Ln 10, Cl 5" (shows only current position)
 ---@return string The formatted cursor position string or empty string
 function M.cursor_position(show_total)
-  if vim.o.columns < Statusline.opts.position_min_width then
+  if vim.o.columns < Statusline.position_min_width then
     return ""
   end
 
@@ -196,7 +196,7 @@ end
 ---@return string The formatted working directory string or empty string
 function M.cwd()
   if vim.o.columns > 85 then
-    return C.join(" ", { "%#StLineCwd#", Statusline.opts.icons.cwd, C.get_cwd() })
+    return C.join(" ", { "%#StLineCwd#", Statusline.icons.cwd, C.get_cwd() })
   end
   return ""
 end
