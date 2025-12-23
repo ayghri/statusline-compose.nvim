@@ -17,21 +17,21 @@ local default_config = {
   -- Icons for various statusline elements
   icons = {
     modified = "",
-    mode = "",
+    mode = "",
     default_file = "󰈚",
-    git_branch = "",
+    git_branch = "",
     cwd = "󰉖",
     git_changes = {
       added = "",
       changed = "",
       removed = "",
     },
-    lsp = "󰄭",
+    lsp = "",
     diagnostics = {
       error = "󰅚",
-      warn = "",
+      warn = "",
       hint = "󰛩",
-      info = "",
+      info = "",
     },
     -- Spinner animation frames for LSP progress
     spinners = {

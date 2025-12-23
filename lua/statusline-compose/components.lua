@@ -17,7 +17,7 @@ end
 function M.file_info()
   local info = C.get_file_info()
   return C.join(" ", {
-    "%#StLineFileInfo# " .. info.icon,
+    "%#StLineFileInfo#" .. info.icon,
     C.sub_empty(info.name)
       .. "%#StLinePosSep#"
       .. ((vim.bo.modified and " " .. Statusline.icons.modified) or ""),
