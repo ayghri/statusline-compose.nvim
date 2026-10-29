@@ -36,9 +36,21 @@ function M.setup(opts)
   else
     -- Use theme-based statusline
     vim.opt.statusline = "%!v:lua.require('statusline-compose.themes."
-        .. Statusline.theme
-        .. "').run()"
+      .. Statusline.theme
+      .. "').run()"
   end
+end
+
+--- Report an abnormal LSP exit for display in the statusline.
+function M.set_lsp_error(name, code, signal)
+  require("statusline-compose.core.common").set_lsp_error(name, code, signal)
+  vim.cmd.redrawstatus()
+end
+
+--- Clear a previously reported LSP exit after the client reconnects.
+function M.clear_lsp_error(name)
+  require("statusline-compose.core.common").clear_lsp_error(name)
+  vim.cmd.redrawstatus()
 end
 
 return M

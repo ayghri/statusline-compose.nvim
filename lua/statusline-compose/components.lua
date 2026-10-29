@@ -36,10 +36,7 @@ end
 function M.git_branch()
   local branch = C.get_branch()
   if branch ~= "" then
-    return C.join(
-      " ",
-      { "%#StLineGitBranch#", Statusline.git_branch_icon, branch }
-    )
+    return C.join(" ", { "%#StLineGitBranch#", Statusline.git_branch_icon, branch })
   end
   return ""
 end
@@ -92,17 +89,13 @@ function M.lsp_diagnostics()
   })
 
   if diags.hint ~= nil and diags.hint > 0 then
-    diagnostics = C.join(
-      " ",
-      { diagnostics, "%#StLineLspHints#" .. icons.hint, diags.hint }
-    )
+    diagnostics =
+      C.join(" ", { diagnostics, "%#StLineLspHints#" .. icons.hint, diags.hint })
   end
 
   if diags.info ~= nil and diags.info > 0 then
-    diagnostics = C.join(
-      " ",
-      { diagnostics, "%#StLineLspInfo#" .. icons.info, diags.info }
-    )
+    diagnostics =
+      C.join(" ", { diagnostics, "%#StLineLspInfo#" .. icons.info, diags.info })
   end
 
   return diagnostics
@@ -138,6 +131,18 @@ end
 --- Shows full name on wide terminals, just "LSP" on narrow terminals
 ---@return string The formatted LSP status string or empty string if no client connected
 function M.lsp_status()
+  local error = C.get_lsp_error()
+  if error then
+    local label = "LSP failed"
+    if vim.o.columns > 100 then
+      label = string.format("%s exited (%d)", error.name, error.code)
+    end
+    return C.join(
+      " ",
+      { "%#StLineLspError#", Statusline.icons.diagnostics.error, label }
+    )
+  end
+
   local client = C.get_lsp_client()
   if client == "" then
     return ""

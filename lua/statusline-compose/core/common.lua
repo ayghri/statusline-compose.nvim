@@ -4,6 +4,7 @@
 local fn = vim.fn
 local Mods = require("statusline-compose.core.modes")
 local M = {}
+local lsp_errors = {}
 
 --- Count diagnostics of a given severity in the current buffer
 ---@param severity number The severity level to count
@@ -36,7 +37,9 @@ end
 ---@param right_p string|nil Right padding (default: space)
 ---@return string The padded text
 function M.pad(text, left_p, right_p)
-  if text == "" then return "" end
+  if text == "" then
+    return ""
+  end
   return string.gsub(text, "(%%#.-#)(.*)", "%1" .. (left_p or " ") .. "%2")
     .. (right_p or " ")
 end
@@ -57,7 +60,11 @@ end
 ---@return table Table with 'mode' and 'highlight' keys
 function M.get_mode()
   local m = vim.api.nvim_get_mode().mode
-  return { mode = Mods[m][1], highlight = "%#" .. Mods[m][2] .. "#" }
+  local mode = Mods[m]
+  if not mode then
+    return { mode = "UNKNOWN (" .. m .. ")", highlight = "%#StLineNormalMode#" }
+  end
+  return { mode = mode[1], highlight = "%#" .. mode[2] .. "#" }
 end
 
 --- Get current working directory name (last component)
@@ -77,7 +84,9 @@ function M.get_file_info()
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
     if devicons_present then
       local ft_icon = devicons.get_icon(filename)
-      if ft_icon ~= nil then icon = ft_icon end
+      if ft_icon ~= nil then
+        icon = ft_icon
+      end
     end
   end
   return { name = filename, icon = icon }
@@ -94,7 +103,9 @@ end
 ---@return string The branch name or empty string
 function M.get_branch()
   local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
-  if not gitsigns_ok then return "" end
+  if not gitsigns_ok then
+    return ""
+  end
 
   local status = vim.b.gitsigns_status_dict
   if not status or not status.head or status.head == "" then
@@ -108,10 +119,14 @@ end
 ---@return table|nil Table with 'added', 'changed', 'removed' keys or nil
 function M.get_changes()
   local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
-  if not gitsigns_ok then return nil end
+  if not gitsigns_ok then
+    return nil
+  end
 
   local status = vim.b.gitsigns_status_dict
-  if not status then return nil end
+  if not status then
+    return nil
+  end
 
   return {
     added = status.added or 0,
@@ -132,10 +147,42 @@ function M.get_lsp_client()
   return ""
 end
 
+--- Record an abnormal language-server exit for the statusline.
+---@param name string
+---@param code integer
+---@param signal integer
+function M.set_lsp_error(name, code, signal)
+  if code == 0 or signal == 15 then
+    return
+  end
+  lsp_errors[name] = { code = code, signal = signal, time = vim.uv.hrtime() }
+end
+
+--- Clear an LSP error after the server has successfully attached again.
+---@param name string
+function M.clear_lsp_error(name)
+  lsp_errors[name] = nil
+end
+
+--- Return the most recently recorded LSP failure, if any.
+---@return { name: string, code: integer, signal: integer }|nil
+function M.get_lsp_error()
+  local latest
+  for name, error in pairs(lsp_errors) do
+    if not latest or error.time > latest.time then
+      latest =
+        { name = name, code = error.code, signal = error.signal, time = error.time }
+    end
+  end
+  return latest
+end
+
 --- Get diagnostic counts for the current buffer
 ---@return table Table with 'error', 'warn', 'hint', 'info' keys
 function M.get_diagnostics()
-  if not rawget(vim, "lsp") then return {} end
+  if not rawget(vim, "lsp") then
+    return {}
+  end
   return {
     error = M.count_severity(vim.diagnostic.severity.ERROR),
     warn = M.count_severity(vim.diagnostic.severity.WARN),
@@ -148,9 +195,13 @@ end
 --- Shows messages like "Loading", "Formatting", etc. with percentage
 ---@return table|string Table with 'message', 'title', 'percentage' keys or empty string
 function M.get_lsp_message()
-  if not rawget(vim, "lsp") or vim.lsp.status then return "" end
+  if not rawget(vim, "lsp") or vim.lsp.status then
+    return ""
+  end
   local lsp = vim.lsp.util.get_progress_messages()[1]
-  if not lsp then return "" end
+  if not lsp then
+    return ""
+  end
 
   local msg = lsp.message or ""
   local percentage = lsp.percentage or 0
